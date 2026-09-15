@@ -3,6 +3,15 @@ name = "ss-rag"
 version = "0.1.0"
 description = "SS-RAG — hypergraph-driven Retrieval-Augmented Generation"
 requires-python = ">=3.10"
+# NOTE: Vercel installs runtime deps from THIS list (not requirements.txt).
+# Keep in sync with requirements.txt (which additionally has uvicorn for local dev).
+dependencies = [
+  "numpy",
+  "openai>=1.0",
+  "tiktoken",
+  "fastapi",
+  "pydantic",
+]
 
 [tool.vercel]
 entrypoint = "service_api:app"
