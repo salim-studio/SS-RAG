@@ -52,6 +52,15 @@ uvicorn service_api:app --port 8000
 ```
 ثم افتح `testHTML_light.html` في المتصفح.
 
+## النشر على Vercel
+المستودع جاهز: `pyproject.toml` يحدد `[tool.vercel] entrypoint = "service_api:app"`
+والتثبيت يتم من `requirements.txt` تلقائياً. اضبط متغيرات البيئة في Vercel:
+`LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` و`EMB_*` (أو اتركها فارغة للوضع offline)،
+واختيارياً `SSRAG_DATA_NAME` و`SSRAG_MODE`. ملاحظة: على Vercel يُستخدم `/tmp`
+كمجلد عمل (نظام الملفات للقراءة فقط)، والفهرس المبني محلياً في `caches/` غير
+منشور (مستبعد في `.gitignore`) — أي أن Retrieval سيعمل على فهرس فارغ ما لم
+تُحمّل بياناتك وتبني الفهرس بطريقة أخرى.
+
 ## الفرق عن Hyper-RAG الأصلي
 | | Hyper-RAG | SS-RAG |
 |---|---|---|

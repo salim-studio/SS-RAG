@@ -1,0 +1,8 @@
+[project]
+name = "ss-rag"
+version = "0.1.0"
+description = "SS-RAG — hypergraph-driven Retrieval-Augmented Generation"
+requires-python = ">=3.10"
+
+[tool.vercel]
+entrypoint = "service_api:app"

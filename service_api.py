@@ -19,7 +19,14 @@ API_KEY = os.getenv("SSRAG_API_KEY", "").strip()
 
 THIS_FILE = Path(__file__).resolve()
 ROOT = THIS_FILE.parent
-WORKING_DIR = ROOT / "caches" / DATA_NAME
+# Vercel's filesystem is read-only except /tmp — honor env override, /tmp on Vercel, local caches/ otherwise
+_WORKDIR_ENV = os.getenv("SSRAG_WORKDIR", "").strip()
+if _WORKDIR_ENV:
+    WORKING_DIR = Path(_WORKDIR_ENV)
+elif os.getenv("VERCEL"):
+    WORKING_DIR = Path("/tmp") / "ssrag" / DATA_NAME
+else:
+    WORKING_DIR = ROOT / "caches" / DATA_NAME
 sys.path.insert(0, str(ROOT))
 
 from ssrag import SSRAG, QueryParam
