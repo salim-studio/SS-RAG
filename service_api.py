@@ -4,6 +4,7 @@ import os, sys, time, logging
 from pathlib import Path
 from typing import Optional, Dict, Tuple
 import asyncio
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -38,10 +39,37 @@ try:
 except Exception:
     EMB_DIM, LLM_API_KEY, LLM_BASE_URL, LLM_MODEL = 384, "xxx", "", "gpt-4o-mini"
 
-app = FastAPI(title="SS-RAG API", version="0.1.0")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-
 rag: Optional[SSRAG] = None
+
+
+async def _init_rag():
+    """Init the SSRAG singleton (idempotent). Called from lifespan + lazily per-request."""
+    global rag
+    if rag is not None:
+        return
+    WORKING_DIR.mkdir(parents=True, exist_ok=True)
+
+    async def stream_func(prompt, system_prompt=None, history_messages=[], **kwargs):
+        async for tok in openai_complete_stream_if_cache(
+            prompt, system_prompt, history_messages,
+            model=LLM_MODEL, api_key=LLM_API_KEY, base_url=LLM_BASE_URL, **kwargs):
+            yield tok
+
+    rag = SSRAG(working_dir=str(WORKING_DIR), llm_model_func=llm_model_func,
+                llm_model_stream_func=stream_func,
+                embedding_func=EmbeddingFunc(embedding_dim=int(EMB_DIM), max_token_size=8192, func=embedding_func))
+    logger.info(f"SS-RAG ready dir={WORKING_DIR} mode={MODE}")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await _init_rag()
+    yield
+    logger.info("SS-RAG shutdown")
+
+
+app = FastAPI(title="SS-RAG API", version="0.1.0", lifespan=lifespan)
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 
 class QueryRequest(BaseModel):
@@ -70,21 +98,15 @@ def _rate_limit(ip: str):
     _rate[ip] = (ws, c + 1)
 
 
-@app.on_event("startup")
-async def _startup():
-    global rag
-    WORKING_DIR.mkdir(parents=True, exist_ok=True)
-
-    async def stream_func(prompt, system_prompt=None, history_messages=[], **kwargs):
-        async for tok in openai_complete_stream_if_cache(
-            prompt, system_prompt, history_messages,
-            model=LLM_MODEL, api_key=LLM_API_KEY, base_url=LLM_BASE_URL, **kwargs):
-            yield tok
-
-    rag = SSRAG(working_dir=str(WORKING_DIR), llm_model_func=llm_model_func,
-                llm_model_stream_func=stream_func,
-                embedding_func=EmbeddingFunc(embedding_dim=int(EMB_DIM), max_token_size=8192, func=embedding_func))
-    logger.info(f"SS-RAG ready dir={WORKING_DIR} mode={MODE}")
+@app.get("/")
+async def root():
+    return {
+        "app": "SS-RAG",
+        "message": "Semantic Super RAG API — POST /query | POST /query_stream | GET /healthz | GET /docs",
+        "data": DATA_NAME,
+        "mode": MODE,
+        "ready": rag is not None,
+    }
 
 
 @app.get("/healthz")
@@ -100,6 +122,7 @@ async def query(req: QueryRequest, request: Request, x_api_key: Optional[str] = 
     mode = (req.mode or MODE).strip()
     if mode not in {"hyper", "hyper-lite", "graph", "naive", "llm"}:
         raise HTTPException(400, "mode must be hyper/hyper-lite/graph/naive/llm")
+    await _init_rag()
     t0 = time.time()
     answer = await rag.aquery(req.question, param=QueryParam(mode=mode))
     return QueryResponse(answer=answer, mode=mode, latency_ms=int((time.time() - t0) * 1000))
@@ -110,6 +133,7 @@ async def query_stream(req: QueryRequest, request: Request):
     _rate_limit(request.client.host if request.client else "unknown")
     mode = (req.mode or MODE).strip()
     qp = QueryParam(mode=mode)
+    await _init_rag()
 
     async def gen():
         async for tok in rag.astream_query(req.question, param=qp):
