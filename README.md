@@ -57,9 +57,14 @@ uvicorn service_api:app --port 8000
 والتثبيت يتم من `requirements.txt` تلقائياً. اضبط متغيرات البيئة في Vercel:
 `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` و`EMB_*` (أو اتركها فارغة للوضع offline)،
 واختيارياً `SSRAG_DATA_NAME` و`SSRAG_MODE`. ملاحظة: على Vercel يُستخدم `/tmp`
-كمجلد عمل (نظام الملفات للقراءة فقط)، والفهرس المبني محلياً في `caches/` غير
-منشور (مستبعد في `.gitignore`) — أي أن Retrieval سيعمل على فهرس فارغ ما لم
-تُحمّل بياناتك وتبني الفهرس بطريقة أخرى.
+كمجلد عمل (نظام الملفات للقراءة فقط). مجلد `seed_index/<data>/` المشحون في
+المستودع يحتوي فهرساً جاهزاً (كيانات + hyperedges + فيكتورز offline) يُنسخ
+تلقائياً عند الإقلاع، فيعمل الاسترجاع الحقيقي فوراً وبدون مفاتيح.
+لإعادة بنائه بعد تغيير بياناتك: `python reproduce/Step_0.py <data>` ثم
+`python reproduce/Step_1.py <data>` وانسخ ملفات `caches/<data>/*.json`
+(عدا questions/response/*.log) إلى `seed_index/<data>/`.
+لإجابات توليدية كاملة أضف مفاتيح LLM في متغيرات بيئة Vercel
+(`LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` و`EMB_*`).
 
 ## الفرق عن Hyper-RAG الأصلي
 | | Hyper-RAG | SS-RAG |

@@ -1,0 +1,144 @@
+{
+  "vertices": {
+    "سليم": {
+      "entity_name": "سليم",
+      "entity_type": "concept",
+      "description": "Mentioned in chunk (3x).",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ]
+    },
+    "Karim": {
+      "entity_name": "Karim",
+      "entity_type": "concept",
+      "description": "Mentioned in chunk (3x).",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ]
+    },
+    "Laila": {
+      "entity_name": "Laila",
+      "entity_type": "concept",
+      "description": "Mentioned in chunk (3x).",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ]
+    },
+    "أهل": {
+      "entity_name": "أهل",
+      "entity_type": "concept",
+      "description": "Mentioned in chunk (2x).",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ]
+    },
+    "القرية": {
+      "entity_name": "القرية",
+      "entity_type": "concept",
+      "description": "Mentioned in chunk (2x).",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ]
+    },
+    "الحداد": {
+      "entity_name": "الحداد",
+      "entity_type": "concept",
+      "description": "Mentioned in chunk (2x).",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ]
+    },
+    "العسل": {
+      "entity_name": "العسل",
+      "entity_type": "concept",
+      "description": "Mentioned in chunk (2x).",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ]
+    },
+    "والزنجبيل": {
+      "entity_name": "والزنجبيل",
+      "entity_type": "concept",
+      "description": "Mentioned in chunk (2x).",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ]
+    }
+  },
+  "hyperedges": {
+    "he-c41b1fd7cffef27e2f2ec5f867340022": {
+      "order": "low",
+      "keywords": "الحداد, سليم",
+      "description": "استدعى الحداد الحكيم سليم، ففحص الطفل وشخّص الالتهاب الرئوي.",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ],
+      "nodes": [
+        "الحداد",
+        "سليم"
+      ]
+    },
+    "he-71fd305d9c7771c99bd471082914edfb": {
+      "order": "low",
+      "keywords": "أهل, القرية",
+      "description": "بعد ثلاثة أيام تحسّن الطفل، فأقام أهل القرية احتفالاً شكراً للحكيم.",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ],
+      "nodes": [
+        "أهل",
+        "القرية"
+      ]
+    },
+    "he-66d25b943a8822e08901c2c0d2772c84": {
+      "order": "low",
+      "keywords": "العسل, والزنجبيل",
+      "description": "الوصفات التقليدية مثل العسل والزنجبيل قد تخفف الأعراض لكنها لا تغني عن التشخيص الطبي الدقيق والمضادات الحيوية عند الحاجة.",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ],
+      "nodes": [
+        "العسل",
+        "والزنجبيل"
+      ]
+    },
+    "he-a058e52732978b34bddb2e8649734113": {
+      "order": "low",
+      "keywords": "Karim, Laila",
+      "description": "In the same village lived a blacksmith named Karim who forged tools, and a teacher named Laila who taught children reading.",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ],
+      "nodes": [
+        "Karim",
+        "Laila"
+      ]
+    },
+    "he-7412bb0f0a77fcbcdf7b28ab016a073b": {
+      "order": "high",
+      "keywords": "أهل, القرية, سليم",
+      "description": "عرف سليم بأنه يجمع الأعشاب الطبية ويعالج أهل القرية.",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ],
+      "nodes": [
+        "أهل",
+        "القرية",
+        "سليم"
+      ]
+    },
+    "he-4485b7bcab44d1e4754bc44aa8de850c": {
+      "order": "high",
+      "keywords": "العسل, سليم, والزنجبيل",
+      "description": "وصف سليم العسل والزنجبيل والراحة، وطلب مراقبة الحرارة.",
+      "source_ids": [
+        "chunk-ddd5829fb2d47e165f36dd18ebad30d5"
+      ],
+      "nodes": [
+        "العسل",
+        "سليم",
+        "والزنجبيل"
+      ]
+    }
+  }
+}

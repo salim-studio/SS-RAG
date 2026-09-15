@@ -48,6 +48,18 @@ async def _init_rag():
     if rag is not None:
         return
     WORKING_DIR.mkdir(parents=True, exist_ok=True)
+    # Seed a prebuilt index (shipped in repo) when the workdir is empty —
+    # this is what gives Vercel real retrieval without a persistent disk.
+    try:
+        import shutil
+        seed_dir = ROOT / "seed_index" / DATA_NAME
+        marker = WORKING_DIR / "hypergraph_chunk_entity_relation.json"
+        if not marker.exists() and seed_dir.is_dir():
+            for f in seed_dir.glob("*.json"):
+                shutil.copy(f, WORKING_DIR / f.name)
+            logger.info(f"seeded index from {seed_dir} ({len(list(seed_dir.glob('*.json')))} files)")
+    except Exception as e:
+        logger.warning(f"seed copy failed: {e}")
 
     async def stream_func(prompt, system_prompt=None, history_messages=[], **kwargs):
         async for tok in openai_complete_stream_if_cache(
