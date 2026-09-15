@@ -1,0 +1,19 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/>
+<title>SS-RAG test</title><style>body{font-family:system-ui;max-width:720px;margin:40px auto;padding:0 16px}textarea{width:100%;height:90px}pre{white-space:pre-wrap;background:#f5f5f5;padding:12px;border-radius:8px}#out{min-height:120px}</style></head>
+<body><h2>SS-RAG — اختبار سريع</h2>
+<p>شغّل أولاً: <code>uvicorn service_api:app --port 8000</code> من مجلد SS-RAG</p>
+<label>السؤال:</label><textarea id="q">ما هي أهم موضوعات هذه القصة؟</textarea><br/><br/>
+<label>الوضع:</label><select id="m"><option>hyper</option><option>hyper-lite</option><option>naive</option><option>llm</option></select>
+<label><input type="checkbox" id="s" checked/> streaming</label><br/><br/>
+<button onclick="ask()">اسأل</button>
+<pre id="out"></pre>
+<script>
+async function ask(){
+  const q=document.getElementById('q').value, m=document.getElementById('m').value, s=document.getElementById('s').checked;
+  const out=document.getElementById('out'); out.textContent='...';
+  if(!s){ const r=await fetch('http://localhost:8000/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,mode:m})}); out.textContent=(await r.json()).answer; return; }
+  const r=await fetch('http://localhost:8000/query_stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,mode:m})});
+  const rd=r.body.getReader(), dec=new TextDecoder(); let t=''; out.textContent='';
+  while(true){ const {done,value}=await rd.read(); if(done)break; t+=dec.decode(value,{stream:true}); out.textContent=t; }
+}
+</script></body></html>

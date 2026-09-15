@@ -1,0 +1,6 @@
+numpy
+openai>=1.0
+tiktoken
+fastapi
+uvicorn[standard]
+pydantic
